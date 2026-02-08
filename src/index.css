@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+  /* 👇 CHANGE THIS LINE */
+  scroll-snap-type: y proximity; 
+}
+
 @layer base {
   :root {
     /* Core romantic palette */

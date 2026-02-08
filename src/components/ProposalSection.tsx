@@ -1,302 +1,138 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import confetti from 'canvas-confetti';
-import { Heart, Calendar, MapPin, Clock, IndianRupee, ReceiptText, ShieldBan } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Heart, Stars } from 'lucide-react';
+import confetti from 'canvas-confetti'; 
+import Ticket from './Ticket';
 
 const ProposalSection = () => {
-  const [noButtonPos, setNoButtonPos] = useState({ x: 0, y: 0 });
-  const [dodgeCount, setDodgeCount] = useState(0);
-  const [showTicket, setShowTicket] = useState(false);
-  const [celebration, setCelebration] = useState(false);
-  const noButtonRef = useRef<HTMLButtonElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [accepted, setAccepted] = useState(false);
 
-  const handleNoHover = () => {
-    if (!containerRef.current) return;
-    
-    const container = containerRef.current.getBoundingClientRect();
-    const maxX = container.width / 2 - 80;
-    const maxY = container.height / 3;
-    
-    // More dramatic dodges as count increases
-    const intensity = Math.min(1 + dodgeCount * 0.2, 2);
-    
-    const newX = (Math.random() - 0.5) * maxX * 2 * intensity;
-    const newY = (Math.random() - 0.5) * maxY * 2 * intensity;
-    
-    setNoButtonPos({ x: newX, y: newY });
-    setDodgeCount(prev => prev + 1);
+  const handleAccept = () => {
+    setAccepted(true);
+    triggerHeartFireworks();
   };
 
-  const handleYesClick = () => {
-    setCelebration(true);
-    
-    // Fire confetti!
-    const duration = 4000;
-    const end = Date.now() + duration;
-    
-    const colors = ['#FFB4C2', '#D4AF37', '#FF69B4', '#FFD700', '#FF1493'];
-    
-    const frame = () => {
-      confetti({
-        particleCount: 5,
-        angle: 60,
-        spread: 80,
-        origin: { x: 0, y: 0.8 },
-        colors,
-        shapes: ['circle'],
-      });
-      confetti({
-        particleCount: 5,
-        angle: 120,
-        spread: 80,
-        origin: { x: 1, y: 0.8 },
-        colors,
-        shapes: ['circle'],
-      });
-      
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
-    };
-    
-    frame();
-    
-    // Heart-shaped confetti burst
-    // 1. Define the heart shape using an SVG path
-const heart = confetti.shapeFromPath({
-  path: 'M167 72c19,-38 37,-56 75,-56 42,0 76,33 76,75 0,76 -76,151 -151,227 -76,-76 -151,-151 -151,-227 0,-42 33,-75 76,-75 38,0 57,18 75,56z'
-});
+  const triggerHeartFireworks = () => {
+    const duration = 5 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-// 2. Trigger the burst
-setTimeout(() => {
-  confetti({
-    particleCount: 100,
-    spread: 100,
-    origin: { x: 0.5, y: 0.5 },
-    colors: colors, // Assuming you have your colors array defined
-    shapes: [heart], // <--- Use the custom heart shape here
-    scalar: 2, // Increased scalar slightly so the hearts are visible
-    drift: 0,
-    ticks: 200 // Makes them float a bit longer
-  });
-}, 5000);
-    setTimeout(() => {
+    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+    // 👇 DEFINE THE HEART SHAPE HERE
+    const heart = confetti.shapeFromPath({
+      path: 'M167 72c19,-38 37,-56 75,-56 42,0 76,33 76,75 0,76 -76,151 -151,227 -76,-76 -151,-151 -151,-227 0,-42 33,-75 76,-75 38,0 57,18 75,56z'
+    });
+
+    const interval: any = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      
       confetti({
-        particleCount: 100,
-        spread: 100,
-        origin: { x: 0.5, y: 0.5 },
-        colors,
-        shapes: [heart],
-        scalar: 1.5,
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        shapes: [heart], // 👈 USE THE HEART SHAPE
+        colors: ['#FFC0CB', '#FF69B4', '#FF1493', '#C71585', '#fb7185', '#f43f5e'], // Pinks & Reds
+        scalar: 2 // 👈 MAKE THEM BIGGER
       });
-    }, 5000);
-    
-    
-    // Show ticket after confetti starts
-    setTimeout(() => {
-      setShowTicket(true);
-    }, 2000);
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        shapes: [heart], // 👈 USE THE HEART SHAPE
+        colors: ['#FFC0CB', '#FF69B4', '#FF1493', '#C71585', '#fb7185', '#f43f5e'], // Pinks & Reds
+        scalar: 2 // 👈 MAKE THEM BIGGER
+      });
+    }, 250);
   };
 
   return (
-    <section 
-      ref={containerRef}
-      className="scroll-section relative overflow-hidden"
-      style={{
-        background: celebration 
-          ? 'radial-gradient(ellipse at center, hsl(43 74% 20%) 0%, hsl(0 100% 8%) 100%)'
-          : 'radial-gradient(ellipse at center, hsl(0 100% 12%) 0%, hsl(0 100% 4%) 100%)',
-        transition: 'background 1s ease-out',
-      }}
-    >
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6">
-        <motion.h2
-          className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-cream mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          style={{
-            textShadow: '0 0 60px rgba(212, 175, 55, 0.3)',
-          }}
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-black overflow-hidden py-20">
+      {/* Background Texture */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-rose-900/20 via-black to-black" />
+
+      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
+        
+        {/* Intro Icon */}
+        <motion.div
+          initial={{ scale: 0 }}
+          whileInView={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 160, damping: 20 }}
+          className="mb-8 flex justify-center"
         >
-          Will you be my Valentine?
-        </motion.h2>
-        
-        {!celebration && (
-          <div className="flex flex-col sm:flex-row items-center gap-8 relative">
-            {/* Yes Button */}
-            <motion.button
-              className="btn-yes font-display"
-              onClick={handleYesClick}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Yes! ❤️
-            </motion.button>
-            
-            {/* No Button - Dodges on hover */}
-            <motion.button
-              ref={noButtonRef}
-              className="btn-no font-body"
-              onMouseEnter={handleNoHover}
-              onTouchStart={handleNoHover}
-              animate={{
-                x: noButtonPos.x,
-                y: noButtonPos.y,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 20,
-              }}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              No
-            </motion.button>
+          <div className="relative">
+             <Heart className="w-24 h-24 text-rose-500 fill-rose-500 animate-pulse" />
+             <Stars className="absolute -top-4 -right-4 w-10 h-10 text-yellow-400 animate-bounce" />
           </div>
-        )}
-        
-        {celebration && !showTicket && (
+        </motion.div>
+
+        {!accepted ? (
           <motion.div
-            className=" text-cream text-lg md:text-xl mb-12 max-w-md font-display font-bold"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.8 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
           >
-            You already are. This is just the ceremony💕
-          </motion.div>
-        )}
-      </div>
-      
-      {/* Ticket Modal */}
-      <AnimatePresence>
-        {showTicket && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="ticket-card max-w-md w-full rounded-lg p-8 md:p-10"
-              initial={{ scale: 0.5, rotateY: 90 }}
-              animate={{ scale: 1, rotateY: 0 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ type: "spring", damping: 20 }}
-            >
-              {/* Ticket header */}
-              <div className="text-center mb-8">
-                <p className="text-rose-soft text-sm uppercase tracking-widest mb-2">
-                  Admit One - VIP Access to My Life
-                </p>
-                <h3 className="font-display text-3xl md:text-4xl font-bold text-burgundy-deep">
-                  Date Night Ticket
-                </h3>
-              </div>
-              
-              {/* Dotted line */}
-              <div className="border-t-2 border-dashed border-burgundy-deep/20 my-6" />
-              
-              {/* Ticket details */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Calendar className="w-5 h-5 text-gold" />
-                  <div>
-                    <p className="text-sm text-burgundy-deep/60">Date</p>
-                    <p className="font-display text-lg text-burgundy-deep">
-                      Started Since I Met You My Love 🌍♥️🫵🏻
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-gold" />
-                  <div>
-                    <p className="text-sm text-burgundy-deep/60">Time</p>
-                    <p className="font-display text-lg text-burgundy-deep">
-                      Always in my thoughts 😍
-                    </p>
-                  </div>
-                </div>
+            <h2 className="font-display text-5xl md:text-7xl text-white mb-6">
+              You already said <span className="text-rose-500">Yes</span>...
+            </h2>
+            <p className="font-body text-xl md:text-2xl text-rose-100/80 mb-12 leading-relaxed">
+              And that was the best moment of my life. <br/>
+              But today, I have one more question for my Sam:
+            </p>
 
-                <div className="flex items-center gap-3">
-                  <ShieldBan className="w-5 h-5 text-gold" />
-                  <div>
-                    <p className="text-sm text-burgundy-deep/60">Expiration</p>
-                    <p className="font-display text-lg text-burgundy-deep">
-                      Never 🌕✨
-                    </p>
-                  </div>
-                </div>
+            <h3 className="font-display text-4xl md:text-6xl text-white mb-12 drop-shadow-[0_0_15px_rgba(244,63,94,0.5)]">
+              Will you be my Valentine?
+            </h3>
 
-                <div className="flex items-center gap-3">
-                  <IndianRupee className="w-5 h-5 text-gold" />
-                  <div>
-                    <p className="text-sm text-burgundy-deep/60">Price</p>
-                    <p className="font-display text-lg text-burgundy-deep">
-                      One Smile 🫠🤌🏻💗
-                    </p>
-                  </div>
-                </div>
-
-                 <div className="flex items-center gap-3">
-                  <ReceiptText className="w-5 h-5 text-gold" />
-                  <div>
-                    <p className="text-sm text-burgundy-deep/60">T&C</p>
-                    <p className="font-display text-lg text-burgundy-deep">
-                      Non-refundable and strictly non-transferable 𓆩❤︎𓆪
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 text-gold" />
-                  <div>
-                    <p className="text-sm text-burgundy-deep/60">Location</p>
-                    <p className="font-display text-lg text-burgundy-deep">
-                     Wherever we both meet 🫶🏼🧿💕
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Dotted line */}
-              <div className="border-t-2 border-dashed border-burgundy-deep/20 my-6" />
-              
-              {/* Romantic tagline */}
-              <div className="text-center">
-                <p className="font-display italic text-burgundy-deep/80 text-lg">
-                  "Every love story is beautiful, but ours is my favorite"
-                </p>
-                <Heart className="w-8 h-8 text-rose-soft mx-auto mt-4 animate-pulse" />
-              </div>
-              
-              {/* Close button */}
+            {/* TWO YES BUTTONS */}
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
               <motion.button
-                className="mt-8 w-full py-3 rounded-full font-display text-lg"
-                style={{
-                  background: 'linear-gradient(135deg, hsl(350 80% 25%) 0%, hsl(0 100% 15%) 100%)',
-                  color: 'hsl(30 50% 96%)',
-                }}
-                onClick={() => setShowTicket(false)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                onClick={handleAccept}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-10 py-4 bg-rose-600 text-white font-display text-xl rounded-full shadow-[0_0_30px_rgba(225,29,72,0.6)] hover:bg-rose-50 transition-all"
               >
-                I Can't Wait! 💕
+                Yes, Forever! ❤️
               </motion.button>
-            </motion.div>
+
+              <motion.button
+                onClick={handleAccept}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-10 py-4 bg-white text-black font-display text-xl rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:bg-rose-50 transition-all"
+              >
+                Of Course! 🌹
+              </motion.button>
+            </div>
+          </motion.div>
+        ) : (
+          /* SUCCESS STATE WITH TICKET REVEAL */
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full flex flex-col items-center"
+          >
+            <h2 className="font-display text-4xl md:text-6xl text-white mb-4">
+              You already are. This is just the ceremony💕
+            </h2>
+            <p className="font-body text-xl text-rose-200 mb-8">
+              I can't wait to celebrate the life with you.
+            </p>
+            
+            {/* THE GOLDEN TICKET */}
+            <Ticket />
+
           </motion.div>
         )}
-      </AnimatePresence>
+
+      </div>
     </section>
   );
 };
