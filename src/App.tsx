@@ -4,9 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// 👇 FIX: Use lowercase "index" here. 
-// Vercel sees the file as "index.tsx", so we import it as "index".
-import Index from "./pages/index"; 
+// 👇 CHANGED: We now import "Home" instead of "Index"
+import Home from "./pages/Home"; 
 
 import Memories from "./pages/Memories";
 import NotFound from "./pages/NotFound";
@@ -21,12 +20,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* Main Home Page */}
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Home />} />
           
-          {/* Memories Page */}
           <Route path="/memories" element={<Memories />} />
-          
-          {/* 404 Page */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
