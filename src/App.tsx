@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// 👇 CHANGED: We now import "Home" instead of "Index"
+// 👇 FIX: Import "Home" because you renamed the file to Home.tsx
 import Home from "./pages/Home"; 
 
 import Memories from "./pages/Memories";
@@ -19,7 +19,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Main Home Page */}
+          {/* 👇 FIX: Use the Home component here */}
           <Route path="/" element={<Home />} />
           
           <Route path="/memories" element={<Memories />} />
