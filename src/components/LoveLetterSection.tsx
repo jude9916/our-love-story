@@ -73,7 +73,7 @@ const LoveLetterSection = () => {
       // Create audio element - replace with your own audio file
       audioRef.current = new Audio();
       audioRef.current.loop = true;
-      audioRef.current.src = 'public/audio/Dekha.Hi.Nahi.webm';
+      audioRef.current.src = 'music.mp3';
     }
 
     if (isMuted) {
