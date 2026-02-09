@@ -6,6 +6,7 @@ import ProposalSection from '@/components/ProposalSection';
 import HerEssenceSection from '@/components/HerEssenceSection';
 import JourneySection from '@/components/JourneySection';
 
+
 const Home = () => {
   const letterRef = useRef<HTMLDivElement>(null);
 

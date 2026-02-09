@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import WhyHer from "./pages/WhyHer";
 
 // 👇 FIX: Import "Home" because you renamed the file to Home.tsx
 import Home from "./pages/Home"; 
@@ -24,6 +25,7 @@ const App = () => (
           
           <Route path="/memories" element={<Memories />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/why-her" element={<WhyHer />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
